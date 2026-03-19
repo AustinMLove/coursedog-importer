@@ -23,7 +23,7 @@ The tool operates in a pipeline:
 
 ## Tech Stack
 
-- .NET 8 / C#
+- .NET 10 / C#
 - Coursedog Curriculum Management REST API
 - xUnit for unit testing
 
@@ -33,8 +33,8 @@ The tool operates in a pipeline:
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | API authentication | 🔄 In progress |
-| 2 | Course data retrieval | ⬜ Pending |
+| 1 | API authentication | ✅ Complete |
+| 2 | Course data retrieval | 🔄 In progress |
 | 3 | UUID mapping | ⬜ Pending |
 | 4 | HTML block generation | ⬜ Pending |
 | 5 | Program update integration | ⬜ Pending |

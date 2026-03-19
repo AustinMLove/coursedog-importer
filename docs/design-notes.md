@@ -21,6 +21,31 @@ Course links within blocks use Coursedog's internal link format:
 
 ---
 
+## Authentication — API documentation discrepancy
+
+The Coursedog API documentation (Apiary) specifies the password field
+for the `/api/v1/sessions` endpoint as `password`. The actual staging
+instance expects `plaintextPassword`.
+
+**How it was found:** After receiving persistent 404 responses despite
+a confirmed correct endpoint URL, the browser network tab was used to
+intercept a successful login from the Coursedog web UI. The payload
+tab revealed the actual field name the server accepts.
+
+**Resolution:** The `AuthRequest` model uses `PlaintextPassword` as a
+single word so that `JsonNamingPolicy.CamelCase` serializes it correctly
+to `plaintextPassword`. The field name must remain one word — splitting
+it to `PlainTextPassword` causes the serializer to produce `plainTextPassword`
+which the server rejects.
+
+**Broader note:** The browser network tab is a reliable source of truth
+for this API when documentation and behavior conflict. Any ambiguous
+endpoint behavior in Phase 2 should be verified the same way — perform
+the action in the web UI, inspect the request payload, model the code
+against what the server actually accepted.
+
+---
+
 ## UUID field — open question
 
 The Coursedog course API returns three ID-like fields: `id`, `_id`,
