@@ -3,4 +3,4 @@ set -e
 
 # Build steps:
 
-dotnet build "/Users/austinlove/projects/csharp/CoursedogImporter/CoursedogImporter.slnx"
+dotnet build "$(dirname "$0")/CoursedogImporter.slnx"
