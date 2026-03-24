@@ -16,8 +16,9 @@ variation across programs, requires significantly less modeling of
 Coursedog's internal data structures, and produces output that matches
 what a manual user would create through the UI.
 
-Course links within blocks use Coursedog's internal link format:
-`<span data-node-view-wrapper="" contenteditable="false"><a href="#/cm/course/{UUID}">{courseCode}</a></span>`
+Course links within freeform blocks use the following confirmed format,
+verified via browser network tab on a successful program PUT:
+`<a href="/courses/{courseCode}" class="custom-link" data-course-id="{courseCode}">course</a>`
 
 ---
 
@@ -46,12 +47,35 @@ against what the server actually accepted.
 
 ---
 
-## UUID field — open question
+## UUID field — resolved
 
-The Coursedog course API returns three ID-like fields: `id`, `_id`,
-and `courseGroupId`. Internal course links require the UUID used in
-the platform's routing.
+The Coursedog course API returns multiple ID-like fields. After investigation
+via the browser network tab, course UUIDs are not required for embedded course
+links in freeform requirement blocks.
 
-**Status:** To be resolved in Phase 2 by inspecting live course records
-from the staging API and comparing field values against links observed
-in the UI.
+**Resolution:** Embedded course links use the course code directly:
+`<a href="/courses/{courseCode}" class="custom-link" data-course-id="{courseCode}">course</a>`
+
+The course data retrieval service was repurposed into a program data retrieval
+service. Course UUIDs are not needed anywhere in the current implementation.
+
+---
+
+## Program ID fields — resolved
+
+The Coursedog programs API returns multiple ID-like fields on each program
+object. The correct field for constructing PUT endpoint paths is not obvious
+from the API documentation.
+
+**Findings via browser network tab:**
+- `id` — timestamped revision key (e.g. `AA.ARTS-2025-08-18`) — changes per
+  revision, cannot be used for PUT paths
+- `programGroupId` — stable program code, same value as `code`
+- `code` — stable program code (e.g. `AA.ARTS`) — used as dictionary lookup key
+- `sisId` — the full UUID (e.g. `488fa57c-cdce-4123-b947-765e847fef3b`) —
+  confirmed as the correct identifier for PUT endpoint paths by cross-referencing
+  against the browser URL when editing a program in the Coursedog web UI
+
+**Resolution:** `ProgramDataService` builds a `code → sisId` dictionary.
+PUT requests target:
+`/api/v1/cm/{schoolId}/programs/{sisId}?doIntegration=true`

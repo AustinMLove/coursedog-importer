@@ -1,4 +1,5 @@
 ﻿using CoursedogImporter.Authentication;
+using CoursedogImporter.Services;
 
 class Program
 {
@@ -36,14 +37,23 @@ class Program
 
   static async Task Main(string[] args)
   {
-    // .env lives in prject root, two levels up from src/CoursedogImporter.
+    // .env lives in project root, two levels up from src/CoursedogImporter.
     LoadEnvFile("../../.env");
 
+    // Retrieve bearer token for API requests and report status.
     var authClient = new CoursedogAuthClient();
-
     Console.WriteLine("Authenticating with Coursedog API...");
     var token = await authClient.GetTokenAsync();
     Console.WriteLine("Authentication successful. Token received.");
 
+    // GET all programs, build programMap dictionary, and report status.
+    var programDataService = new ProgramDataService();
+    Console.WriteLine("Fetching program data...");
+    var programMap = await programDataService.BuildProgramMapAsync(token);
+    Console.WriteLine($"Program dictionary built. {programMap.Count} programs loaded.");
+
+    // Print first value in programMap to confirm functionality
+    var firstProgram = programMap.First();
+    Console.WriteLine($"Sample entry - Code: {firstProgram.Key}, SISID: {firstProgram.Value}");
   }
 }
