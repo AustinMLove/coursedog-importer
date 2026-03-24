@@ -17,7 +17,7 @@ Coursedog API — replacing a fully manual workflow.
 The tool operates in a pipeline:
 
 1. **Authenticate** — obtain a bearer token via the Coursedog OAuth 2.0 endpoint
-2. **Retrieve course data** — pull course records and build a code-to-UUID lookup table
+2. **Retrieve program data** — pull program records and build a code-to-UUID lookup table for PUT endpoint targeting
 3. **Generate requirement blocks** — produce HTML freeform blocks with embedded internal course links
 4. **Push to API** — update program records via `PUT /cm/{schoolId}/programs/{programId}`
 
@@ -25,6 +25,7 @@ The tool operates in a pipeline:
 
 - .NET 10 / C#
 - Coursedog Curriculum Management REST API
+- HtmlAgilityPack for Modern Campus catalog HTML parsing
 - xUnit for unit testing
 
 ## Project Status
@@ -34,8 +35,8 @@ The tool operates in a pipeline:
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | API authentication | ✅ Complete |
-| 2 | Course data retrieval | 🔄 In progress |
-| 3 | UUID mapping | ⬜ Pending |
+| 2 | Program UUID mapping | ✅ Complete |
+| 3 | Catalog data extraction | 🔄 In progress |
 | 4 | HTML block generation | ⬜ Pending |
 | 5 | Program update integration | ⬜ Pending |
 
