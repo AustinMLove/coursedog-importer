@@ -1,0 +1,10 @@
+services:
+
+  importer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: coursedog-importer:latest
+
+    env_file:
+      - .env
