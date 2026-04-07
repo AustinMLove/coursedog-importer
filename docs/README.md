@@ -36,15 +36,15 @@ The tool operates in a pipeline:
 |-------|-------------|--------|
 | 1 | API authentication | ✅ Complete |
 | 2 | Program UUID mapping | ✅ Complete |
-| 3 | Catalog data extraction | 🔄 In progress |
-| 4 | HTML block generation | ⬜ Pending |
+| 3 | Catalog data extraction | ✅ Complete |
+| 4 | HTML block generation | 🔄 In progress |
 | 5 | Program update integration | ⬜ Pending |
 
 ## Getting Started
 ```bash
 dotnet build
 dotnet test
-dotnet run --project src/CoursedogImporter
+dotnet run --project src/CoursedogImporter "<path-to-catalog-html>"
 ```
 
 ## Design Decisions
