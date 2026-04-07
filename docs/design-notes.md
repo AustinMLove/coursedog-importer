@@ -79,3 +79,21 @@ from the API documentation.
 **Resolution:** `ProgramDataService` builds a `code → sisId` dictionary.
 PUT requests target:
 `/api/v1/cm/{schoolId}/programs/{sisId}?doIntegration=true`
+
+---
+## Catalog parser — XPath SelectNodes over NextSibling traversal
+
+Initial implementation used NextSibling traversal from the anchor h2
+node. This failed because h2, h3, and ul elements are nested inside
+wrapper divs at different levels rather than being direct siblings.
+
+**Resolution:** Replaced with XPath SelectNodes("//h2|//h3|//h4|//ul")
+which selects all relevant elements in document order regardless of
+nesting depth. An inRequirements boolean flag controls extraction scope
+— set to true at "Degree Requirements" or "Certificate Requirements",
+broken at "Completion Plan".
+
+**Typed entry model:** RequirementEntry uses an EntryType enum
+(Course, Placeholder, SubHeading, Subtotal, Narrative) so the HTML
+block generator can make formatting decisions without the parser
+needing to know about output format.
