@@ -1,5 +1,6 @@
 ﻿using CoursedogImporter.Authentication;
 using CoursedogImporter.Services;
+using CoursedogImporter.Models;
 
 class Program
 {
@@ -40,6 +41,12 @@ class Program
     // .env lives in project root, two levels up from src/CoursedogImporter.
     LoadEnvFile("../../.env");
 
+    // Validate command line argument and set path
+    if (args.Length == 0)
+      throw new InvalidOperationException("Usage: dotnet run <path-to-catalog-html>");
+
+    var catalogFilePath = args[0];
+
     // Retrieve bearer token for API requests and report status.
     var authClient = new CoursedogAuthClient();
     Console.WriteLine("Authenticating with Coursedog API...");
@@ -52,8 +59,34 @@ class Program
     var programMap = await programDataService.BuildProgramMapAsync(token);
     Console.WriteLine($"Program dictionary built. {programMap.Count} programs loaded.");
 
-    // Print first value in programMap to confirm functionality
-    var firstProgram = programMap.First();
-    Console.WriteLine($"Sample entry - Code: {firstProgram.Key}, SISID: {firstProgram.Value}");
+    // Parse catalog HTML file
+    Console.WriteLine($"Parsing catalog file: {catalogFilePath}");
+    var parser = new CatalogParserService();
+    var requirements = parser.ParseFromFile(catalogFilePath);
+
+    // Print extracted structure for verification
+    Console.WriteLine($"\nProgram: {requirements.ProgramTitle}");
+    Console.WriteLine($"Sections found: {requirements.Sections.Count}");
+    Console.WriteLine();
+
+    foreach (var section in requirements.Sections)
+    {
+      Console.WriteLine($"--- {section.SectionName} ---");
+      foreach (var entry in section.Entries)
+      {
+        // Type prefix for each entry to verify categorization
+        var prefix = entry.Type switch
+        {
+          EntryType.Course => " [COURSE] ",
+          EntryType.Placeholder => " [PLACEHOLDER] ",
+          EntryType.SubHeading => " [SUBHEADING] ",
+          EntryType.Subtotal => " [SUBTOTAL] ",
+          EntryType.Narrative => " [NARRATIVE] ",
+          _ => " [UNKNOWN] "
+        };
+        Console.WriteLine($"{prefix} {entry.Text}");
+      }
+      Console.WriteLine();
+    }
   }
 }
