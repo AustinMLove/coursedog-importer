@@ -64,29 +64,42 @@ class Program
     var parser = new CatalogParserService();
     var requirements = parser.ParseFromFile(catalogFilePath);
 
-    // Print extracted structure for verification
+    // Print extracted program details for verification
     Console.WriteLine($"\nProgram: {requirements.ProgramTitle}");
     Console.WriteLine($"Sections found: {requirements.Sections.Count}");
-    Console.WriteLine();
 
-    foreach (var section in requirements.Sections)
+    // Generate freeform HTML block
+    var builder = new RequirementBlockBuilder();
+    var freeformHtml = builder.BuildFreeformHtml(requirements);
+
+    // Print generated HTML for verification before sending to API
+    Console.WriteLine("\n--- Generated HTML ---");
+    Console.WriteLine(freeformHtml);
+    Console.WriteLine("--- End HTML ---\n");
+
+    // Submit HTML PUT request with confirmation
+    // For now, prompt user to confirm and manually enter parsed program code
+    Console.WriteLine("Send PUT request to Coursedog API? (yes/no): ");
+    var confirm = Console.ReadLine();
+
+    if (confirm?.ToLower() == "yes" || confirm?.ToLower() == "y")
     {
-      Console.WriteLine($"--- {section.SectionName} ---");
-      foreach (var entry in section.Entries)
+      // Look up sisId by program code
+      Console.WriteLine("Enter program code (e.g. AAS.NUR): ");
+      var programCode = Console.ReadLine();
+
+      if (programMap.TryGetValue(programCode, out var sisId))
       {
-        // Type prefix for each entry to verify categorization
-        var prefix = entry.Type switch
-        {
-          EntryType.Course => " [COURSE] ",
-          EntryType.Placeholder => " [PLACEHOLDER] ",
-          EntryType.SubHeading => " [SUBHEADING] ",
-          EntryType.Subtotal => " [SUBTOTAL] ",
-          EntryType.Narrative => " [NARRATIVE] ",
-          _ => " [UNKNOWN] "
-        };
-        Console.WriteLine($"{prefix} {entry.Text}");
+        var updateService = new ProgramUpdateService();
+        await updateService.UpdateProgramRequirementsAsync(token, sisId, freeformHtml);
       }
-      Console.WriteLine();
+      else
+      {
+        Console.WriteLine($"Program code '{programCode}' not found in dictionary.");
+        Console.WriteLine("Available codes sample:");
+        foreach (var kvp in programMap.Take(5))
+          Console.WriteLine($"  {kvp.Key}");
+      }
     }
   }
 }

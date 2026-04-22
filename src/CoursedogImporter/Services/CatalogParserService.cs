@@ -116,7 +116,7 @@ public class CatalogParserService
   // Extract course code
   public static string ExtractCourseCode(string fullText)
   {
-    var separatorIndex = fullText.IndexOf(" - ");
+    var separatorIndex = fullText.IndexOf(" - ");
     if (separatorIndex < 0)
       return fullText;
 
