@@ -97,3 +97,43 @@ broken at "Completion Plan".
 (Course, Placeholder, SubHeading, Subtotal, Narrative) so the HTML
 block generator can make formatting decisions without the parser
 needing to know about output format.
+
+---
+## HTML output format — confirmed via network tab
+
+All HTML element formats were confirmed against successful PUT payloads
+intercepted via browser network tab on the Coursedog staging instance.
+
+Confirmed formats:
+- Course entry: `<li><p><a href="/courses/{code}" class="custom-link"
+  data-course-id="{code}">{fullText}</a></p></li>`
+- Course lists wrapped in `<ul>` blocks — consecutive course entries
+  grouped together, list closes on any non-course entry
+- Section headers: `<h1>{sectionName}</h1>`
+- Subheadings: `<h2>{text}</h2>`
+- Placeholders: `<p>{text}</p>`
+- Subtotals: `<blockquote><p><strong>{text}</strong></p></blockquote>`
+
+Course href uses code with space removed (ENG101 not ENG 101).
+Confirmed against Coursedog internal link format from network tab.
+
+---
+## Course code separator — non-breaking space
+
+The Modern Campus catalog HTML uses non-breaking spaces (\u00A0)
+around the hyphen separator between course code and name rather than
+regular spaces. ExtractCourseCode uses the actual character copied
+directly from the HTML source to ensure IndexOf finds the separator
+correctly across all programs.
+
+---
+## Known limitation — Program effective dating on PUT
+
+The current PUT implementation does not include effectiveStartDate,
+causing the API to create new program revisions rather than updating
+the existing one in some cases.
+
+**Planned resolution:** Capture effectiveStartDate from the GET all
+programs response in ProgramRecord and include it as a parameter when
+constructing the PUT URL. This will target the existing active revision
+rather than creating a new one.
