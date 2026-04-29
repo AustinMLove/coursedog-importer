@@ -46,3 +46,25 @@ Confirmed format from browser network tab:
 
 The `doIntegration=true` query parameter is included by the web UI on all
 program saves. Include it in PUT requests to match expected behavior.
+
+---
+## Freeform requirements PUT — confirmed payload structure
+
+Confirmed working payload structure for updating program freeform
+requirements via browser network tab:
+
+```json
+{
+  "requisites": {
+    "requisitesFreeform": {
+      "showInCatalog": true,
+      "value": "<ul><li><p><a href=\"/courses/ENG101\" 
+                class=\"custom-link\" 
+                data-course-id=\"ENG101\">course</a></p></li></ul>"
+    }
+  }
+}
+```
+
+CamelCase serialization policy required — same as authentication.
+doIntegration=true query parameter required on all PUT requests.

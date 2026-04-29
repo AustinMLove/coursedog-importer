@@ -16,10 +16,16 @@ Coursedog API — replacing a fully manual workflow.
 
 The tool operates in a pipeline:
 
-1. **Authenticate** — obtain a bearer token via the Coursedog OAuth 2.0 endpoint
-2. **Retrieve program data** — pull program records and build a code-to-UUID lookup table for PUT endpoint targeting
-3. **Generate requirement blocks** — produce HTML freeform blocks with embedded internal course links
-4. **Push to API** — update program records via `PUT /cm/{schoolId}/programs/{programId}`
+1. **Authenticate** — obtain a bearer token via OAuth2
+2. **Retrieve program data** — fetch all programs and build a
+   code-to-UUID lookup table using the sisId field
+3. **Parse catalog data** — read saved Modern Campus HTML files
+   and extract requirement sections using HtmlAgilityPack
+4. **Generate requirement blocks** — produce a single freeform HTML
+   string with embedded course links, section headers, subheadings,
+   placeholders, and subtotals
+5. **Push to API** — update program records via
+   `PUT /cm/{schoolId}/programs/{sisId}?doIntegration=true`
 
 ## Tech Stack
 
@@ -37,8 +43,8 @@ The tool operates in a pipeline:
 | 1 | API authentication | ✅ Complete |
 | 2 | Program UUID mapping | ✅ Complete |
 | 3 | Catalog data extraction | ✅ Complete |
-| 4 | HTML block generation | 🔄 In progress |
-| 5 | Program update integration | ⬜ Pending |
+| 4 | HTML block generation | ✅ Complete |
+| 5 | Program update integration | ✅ Complete |
 
 ## Getting Started
 ```bash
@@ -47,7 +53,10 @@ dotnet test
 dotnet run --project src/CoursedogImporter "<path-to-catalog-html>"
 ```
 
+The tool will prompt for confirmation before sending the PUT request.
+Enter the program code (e.g. `AAS.NUR`) when prompted.
+
 ## Design Decisions
 
-See [docs/design-notes.md](docs/design-notes.md) for architecture
+See [design-notes.md](design-notes.md) for architecture
 decisions and findings made during development.
